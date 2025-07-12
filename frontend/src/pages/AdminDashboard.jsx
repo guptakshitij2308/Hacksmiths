@@ -6,15 +6,78 @@ const AdminDashboard = () => {
   const [skills, setSkills] = useState([
     { id: 1, text: "Professional Sleeper", status: "pending" },
     { id: 2, text: "JavaScript Developer", status: "pending" },
+    { id: 3, text: "React Native Enthusiast", status: "pending" },
+    { id: 4, text: "Backend API Designer", status: "pending" },
+    { id: 5, text: "UI/UX Researcher", status: "pending" },
+    { id: 6, text: "DevOps Intern", status: "pending" },
+    { id: 7, text: "Cybersecurity Hobbyist", status: "pending" },
+    { id: 8, text: "Open Source Contributor", status: "pending" },
+    { id: 9, text: "Node.js Architect", status: "pending" },
   ]);
+
   const [users, setUsers] = useState([
-    { id: 1, name: "Marc Demo", banned: false },
-    { id: 2, name: "Spammer Joe", banned: true },
+    {
+      _id: "6871e1f79b4e602ef137c625",
+      name: "Akshitha",
+      email: "akshitha1@example.com",
+      banned: false,
+    },
+    {
+      _id: "6871e63ce7f0af6646b7c6ef",
+      name: "dalwadi",
+      email: "akshitha12@example.com",
+      banned: false,
+    },
+    {
+      _id: "6871ea58ac84c3c5c76408f3",
+      name: "Akshitha",
+      email: "aks@gmail.com",
+      banned: false,
+    },
+    {
+      _id: "6871eb0dac84c3c5c76408f6",
+      name: "Akshitha",
+      email: "aks123@gmail.com",
+      banned: false,
+    },
   ]);
+
   const [swaps, setSwaps] = useState([
-    { id: 101, users: ["Marc", "Joe"], status: "pending" },
-    { id: 102, users: ["Alice", "Bob"], status: "accepted" },
-    { id: 103, users: ["Eve", "Charlie"], status: "cancelled" },
+    {
+      _id: "68722824241bc7037f6bc362",
+      requestingUserEmail: "aks123@gmail.com",
+      requestedUserEmail: "akshitha12@example.com",
+      status: "pending",
+      message: "heyy",
+    },
+    {
+      _id: "68722ca7fd9da1e462d7adf0",
+      requestingUserEmail: "guptakshitij2308@gmail.com",
+      requestedUserEmail: "aks123@gmail.com",
+      status: "accepted",
+      message: "heyy",
+    },
+    {
+      _id: "687233857f86e31f522f2209",
+      requestingUserEmail: "guptakshitij2308@gmail.com",
+      requestedUserEmail: "aks123@gmail.com",
+      status: "accepted",
+      message: "help",
+    },
+    {
+      _id: "687233b07f86e31f522f220e",
+      requestingUserEmail: "guptakshitij2308@gmail.com",
+      requestedUserEmail: "aks123@gmail.com",
+      status: "rejected",
+      message: "hey",
+    },
+    {
+      _id: "687238247f86e31f522f2320",
+      requestingUserEmail: "aks123@gmail.com",
+      requestedUserEmail: "h@email.com",
+      status: "pending",
+      message: "help",
+    },
   ]);
 
   const handleSkillAction = (id, action) => {
@@ -29,7 +92,7 @@ const AdminDashboard = () => {
 
   const toggleBan = (id) => {
     setUsers((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, banned: !u.banned } : u))
+      prev.map((u) => (u._id === id ? { ...u, banned: !u.banned } : u))
     );
   };
 
@@ -75,7 +138,7 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {/* Content */}
+      {/* Skills Tab */}
       {activeTab === "skills" && (
         <div>
           <h2 className="text-xl font-semibold mb-4">Skill Moderation</h2>
@@ -111,16 +174,17 @@ const AdminDashboard = () => {
         </div>
       )}
 
+      {/* Users Tab */}
       {activeTab === "users" && (
         <div>
           <h2 className="text-xl font-semibold mb-4">User Management</h2>
           {users.map((user) => (
             <div
-              key={user.id}
+              key={user._id}
               className="flex justify-between items-center bg-white shadow-sm border border-gray-200 p-4 mb-3 rounded"
             >
               <span>
-                {user.name} —{" "}
+                {user.name} ({user.email}) —{" "}
                 <span
                   className={`italic text-sm ${
                     user.banned ? "text-red-500" : "text-green-600"
@@ -130,7 +194,7 @@ const AdminDashboard = () => {
                 </span>
               </span>
               <button
-                onClick={() => toggleBan(user.id)}
+                onClick={() => toggleBan(user._id)}
                 className={`px-3 py-1 rounded ${
                   user.banned ? "bg-green-500" : "bg-red-500"
                 } text-white`}
@@ -142,17 +206,25 @@ const AdminDashboard = () => {
         </div>
       )}
 
+      {/* Swaps Tab */}
       {activeTab === "swaps" && (
         <div>
           <h2 className="text-xl font-semibold mb-4">Monitor Swaps</h2>
           {swaps.map((swap) => (
             <div
-              key={swap.id}
+              key={swap._id}
               className="bg-white shadow-sm border border-gray-200 p-4 mb-3 rounded"
             >
               <div className="flex justify-between">
                 <span>
-                  Swap ID #{swap.id} between {swap.users.join(" & ")}
+                  Swap #{swap._id.slice(-6)} —{" "}
+                  <strong>{swap.requestingUserEmail}</strong> ➝{" "}
+                  <strong>{swap.requestedUserEmail}</strong>
+                  {swap.message && (
+                    <span className="ml-2 italic text-gray-500">
+                      (“{swap.message}”)
+                    </span>
+                  )}
                 </span>
                 <span className="italic text-sm text-gray-500">
                   {swap.status}
@@ -163,6 +235,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
+      {/* Alerts Tab */}
       {activeTab === "alerts" && (
         <div>
           <h2 className="text-xl font-semibold mb-4">
@@ -182,6 +255,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
+      {/* Reports Tab */}
       {activeTab === "reports" && (
         <div>
           <h2 className="text-xl font-semibold mb-4">Download Reports</h2>
