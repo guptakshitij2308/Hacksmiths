@@ -7,36 +7,44 @@ import SignUp from "./pages/Signup";
 import Profile from "./pages/Profile";
 import SwapRequest from "./pages/Swaprequest.jsx";
 import UserProfile from "./components/UserProfileDetail.jsx";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Outlet,
+} from "react-router-dom";
+
+const Layout = () => {
+  return (
+    <>
+      <Navbar />
+      <main className="min-h-screen">
+        <Outlet /> {/* All matched child routes go here */}
+      </main>
+      <Footer />
+    </>
+  );
+};
+
 function App() {
   return (
     <Router>
-      <Layout>
-        <Routes>
+      <Routes>
+        {/* Layout wrapper route */}
+        <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/swap" element={<SwapRequest />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/user-details/:username" element={<UserProfile />} />
-          <Route path="/" element={<Home />} />
+          <Route path="/user-details/:id" element={<UserProfile />} />
           <Route path="/admin" element={<AdminDashboard />} />
-        </Routes>
-      </Layout>
-      ?
+        </Route>
+      </Routes>
     </Router>
   );
 }
-
-const Layout = ({ children }) => {
-  return (
-    <>
-      <Navbar />
-      <main>{children}</main>
-      <Footer />
-    </>
-  );
-};
 
 export default App;
