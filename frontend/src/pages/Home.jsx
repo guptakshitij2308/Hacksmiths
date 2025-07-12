@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import SkillSwapModal from "../components/SkillsSwapModal.jsx";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useTheme } from "../context/themecontext";
 
 const storedUser = JSON.parse(localStorage.getItem("user"));
 console.log(storedUser);
 
 const Home = () => {
+  const { darkMode } = useTheme();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
@@ -80,7 +82,11 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900 p-6">
+    <div
+      className={`min-h-screen p-6 ${
+        darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
+      }`}
+    >
       {/* Filters */}
       <div className="max-w-6xl mx-auto mb-6 flex flex-col sm:flex-row gap-4 justify-between items-center">
         <select
@@ -89,12 +95,17 @@ const Home = () => {
             setPage(1);
             setAvailabilityFilter(e.target.value);
           }}
-          className="border border-gray-300 bg-white rounded-lg px-4 py-2 w-full sm:w-1/3 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+          className={`rounded-lg px-4 py-2 w-full sm:w-1/3 shadow-sm focus:outline-none ${
+            darkMode
+              ? "bg-gray-800 border border-gray-600 text-white"
+              : "bg-white border border-gray-300"
+          }`}
         >
           <option value="">Availability</option>
           <option value="Weekends">Weekends</option>
           <option value="Evenings">Evenings</option>
         </select>
+
         <input
           type="text"
           placeholder="Search by skill"
@@ -103,7 +114,11 @@ const Home = () => {
             setPage(1);
             setSearchTerm(e.target.value);
           }}
-          className="border border-gray-300 bg-white rounded-lg px-4 py-2 w-full sm:w-2/3 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+          className={`rounded-lg px-4 py-2 w-full sm:w-2/3 shadow-sm focus:outline-none ${
+            darkMode
+              ? "bg-gray-800 border border-gray-600 text-white"
+              : "bg-white border border-gray-300"
+          }`}
         />
       </div>
 
@@ -117,11 +132,21 @@ const Home = () => {
           users.map((user, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between p-5 bg-white border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition"
+              className={`flex items-center justify-between p-5 rounded-lg shadow-md hover:shadow-lg transition ${
+                darkMode
+                  ? "bg-gray-800 border border-gray-700"
+                  : "bg-white border border-gray-300"
+              }`}
             >
               <Link to={`/user-details/${user.email}`}>
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300 text-sm text-gray-600 overflow-hidden">
+                  <div
+                    className={`w-16 h-16 rounded-full flex items-center justify-center border overflow-hidden ${
+                      darkMode
+                        ? "bg-gray-700 border-gray-600 text-white"
+                        : "bg-gray-200 border-gray-300 text-gray-600"
+                    }`}
+                  >
                     {user.profilePhoto ? (
                       <img
                         src={user.profilePhoto}
@@ -135,7 +160,7 @@ const Home = () => {
                   <div>
                     <h2 className="text-lg font-semibold">{user.name}</h2>
                     <div className="text-sm mt-1">
-                      <span className="text-green-600 font-medium">
+                      <span className="text-green-500 font-medium">
                         Skills Offered:
                       </span>
                       {user.skillsOffered.map((skill) => (
@@ -148,7 +173,7 @@ const Home = () => {
                       ))}
                     </div>
                     <div className="text-sm mt-1">
-                      <span className="text-purple-600 font-medium">
+                      <span className="text-purple-400 font-medium">
                         Skills Wanted:
                       </span>
                       {user.skillsWanted.map((skill) => (
@@ -162,7 +187,7 @@ const Home = () => {
                     </div>
                     {user.availability?.length > 0 && (
                       <div className="text-sm mt-1">
-                        <span className="text-yellow-600 font-medium">
+                        <span className="text-yellow-400 font-medium">
                           Availability:
                         </span>
                         {user.availability.map((slot) => (
@@ -179,7 +204,7 @@ const Home = () => {
                       {user.rating ? (
                         <span>Rating: {user.rating}/5</span>
                       ) : (
-                        <span className="text-green-700 font-medium">
+                        <span className="text-green-500 font-medium">
                           New User
                         </span>
                       )}
@@ -205,7 +230,11 @@ const Home = () => {
             onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
             disabled={page === 1}
             className={`px-3 py-1 rounded-md ${
-              page === 1 ? " text-gray-500 cursor-not-allowed" : " text-black "
+              page === 1
+                ? "text-gray-500 cursor-not-allowed"
+                : darkMode
+                ? "text-white"
+                : "text-black"
             }`}
           >
             Prev
@@ -218,6 +247,8 @@ const Home = () => {
               className={`px-3 py-1 rounded-md ${
                 page === i + 1
                   ? "bg-blue-600 text-white"
+                  : darkMode
+                  ? "bg-gray-700 text-white hover:bg-gray-600"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
@@ -230,8 +261,10 @@ const Home = () => {
             disabled={page === totalPages}
             className={`px-3 py-1 rounded-md ${
               page === totalPages
-                ? " text-gray-500 cursor-not-allowed"
-                : " text-black"
+                ? "text-gray-500 cursor-not-allowed"
+                : darkMode
+                ? "text-white"
+                : "text-black"
             }`}
           >
             Next

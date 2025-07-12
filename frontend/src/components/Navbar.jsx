@@ -5,10 +5,14 @@ import {
   FaExchangeAlt,
   FaSignOutAlt,
   FaUserCircle,
+  FaMoon,
+  FaSun,
 } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext"; // adjust path if needed
+import { useTheme } from "../context/themecontext";
 
 const Navbar = () => {
+  const { darkMode, setDarkMode } = useTheme();
   const navigate = useNavigate();
   const { userInfo, setUserInfo } = useContext(AuthContext);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -54,7 +58,11 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-50 text-gray-900 border-b border-gray-200 shadow-sm sticky top-0 z-50">
+    <nav
+      className={`${
+        darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+      } border-b border-gray-200 shadow-sm sticky top-0 z-50`}
+    >
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Left: Logo + Brand */}
         <Link to="/" className="flex items-center gap-2">
@@ -74,8 +82,14 @@ const Navbar = () => {
               Swap Requests
             </Link>
           </div>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="text-xl focus:outline-none"
+            title="Toggle Theme"
+          >
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </button>
 
-          {/* Right: Auth + Avatar */}
           <div className="flex items-center gap-4 relative" ref={dropdownRef}>
             {userInfo ? (
               <>
@@ -97,16 +111,21 @@ const Navbar = () => {
                 </button>
 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 top-12 bg-white border border-gray-300 rounded-md shadow-lg w-44 z-50">
-                    <div className="px-4 py-2 text-sm text-gray-700">
-                      Signed in as
-                      <br />
+                  <div
+                    className={`absolute right-0 top-12 ${
+                      darkMode
+                        ? "bg-gray-800 border border-gray-600 text-white"
+                        : "bg-white border border-gray-300 text-gray-800"
+                    } rounded-md shadow-lg w-44 z-50`}
+                  >
+                    <div className="px-4 py-2 text-sm">
+                      Signed in as <br />
                       <span className="font-semibold">{userInfo.name}</span>
                     </div>
                     <hr className="my-1" />
                     <button
                       onClick={handleProfileClick}
-                      className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100 text-gray-800"
+                      className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-100"
                     >
                       <FaUserCircle className="mr-2" />
                       Profile
