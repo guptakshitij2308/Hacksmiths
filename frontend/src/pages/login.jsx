@@ -74,15 +74,7 @@ const LoginPage = () => {
             Don&apos;t have an account? Sign Up
           </Link>
         </div>
-      </main>
-      <button
-        onClick={() => setDarkMode(!darkMode)}
-        className={`fixed bottom-6 left-6 p-3 rounded-full shadow-lg ${
-          darkMode ? 'bg-white text-gray-900' : 'bg-gray-900 text-white'
-        } transition`}
-      >
-        {darkMode ? <Sun size={24} /> : <Moon size={24} />}
-      </button>
+    </div>
     </div>
   );
 };
