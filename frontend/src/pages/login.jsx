@@ -74,7 +74,7 @@ const LoginPage = () => {
             Don&apos;t have an account? Sign Up
           </Link>
         </div>
-      </div>
+    </div>
     </div>
   );
 };
