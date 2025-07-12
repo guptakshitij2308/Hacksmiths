@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import {
   FaUsers,
   FaExchangeAlt,
@@ -7,10 +7,15 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 
+import { AuthContext } from "../context/AuthContext"; // adjust path
+
 const Navbar = () => {
   const navigate = useNavigate();
+
+  const { userInfo, setUserInfo } = useContext(AuthContext);
+
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
+
   const dropdownRef = useRef(null);
 
   // ✅ Set userInfo from localStorage
@@ -101,7 +106,7 @@ const Navbar = () => {
                 />
               ) : (
                 <div className="w-9 h-9 bg-blue-500 text-white flex items-center justify-center rounded-full text-sm font-bold">
-                  {userInfo.name.charAt(0).toUpperCase()}
+                  {JSON.parse(userInfo)?.name.charAt(0).toUpperCase()}
                 </div>
               )}
             </button>
