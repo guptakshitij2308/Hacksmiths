@@ -1,6 +1,7 @@
 const SwapRequest = require("../models/SwapRequest.model");
 const User = require("../models/User.model");
 const AppError = require("../utils/appError");
+const Email = require("../utils/Email");
 
 // 🟢 Create swap request
 exports.createSwapRequest = async (req, res, next) => {
@@ -37,6 +38,13 @@ exports.createSwapRequest = async (req, res, next) => {
       requestedUserEmail,
     });
 
+    const email = new Email(requestedUserEmail, "New Skill Swap Request", {
+      message: `You have received a new skill swap request from ${requestingUserEmail}.`,
+      link: `${process.env.FRONTEND_URL}/dashboard`,
+      btnTitle: "View Request",
+    });
+    await email.sendSwapRequestCreated();
+
     res.status(201).json({
       message: "Swap request created successfully",
       swapRequest: newSwap,
@@ -58,6 +66,19 @@ exports.acceptSwapRequest = async (req, res, next) => {
     swapRequest.status = "accepted";
     await swapRequest.save();
 
+    const email = new Email(
+      swapRequest.requestingUserEmail,
+      "Your Swap Request was Accepted!",
+      {
+        message: `Your swap request has been accepted by ${swapRequest.requestedUserEmail}.`,
+        link: `${process.env.FRONTEND_URL}/dashboard`,
+        btnTitle: "View Response",
+        headerColor: "#22c55e",
+      }
+    );
+    await email.sendSwapRequestAccepted();
+    await email.sendSwapRequestAccepted();
+
     res.status(200).json({
       message: "Swap request accepted",
       swapRequest,
@@ -78,6 +99,19 @@ exports.rejectSwapRequest = async (req, res, next) => {
 
     swapRequest.status = "rejected";
     await swapRequest.save();
+
+    const email = new Email(
+      swapRequest.requestingUserEmail,
+      "Your Swap Request was Rejected",
+      {
+        message: `Your swap request was rejected by ${swapRequest.requestedUserEmail}.`,
+        link: `${process.env.FRONTEND_URL}/dashboard`,
+        btnTitle: "Check Details",
+        headerColor: "#ef4444",
+      }
+    );
+    await email.sendSwapRequestRejected();
+    await email.sendSwapRequestRejected();
 
     res.status(200).json({
       message: "Swap request rejected",

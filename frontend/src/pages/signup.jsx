@@ -1,48 +1,69 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Signup = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [location, setLocation] = useState('');
+  const [password, setPassword] = useState('');
   const [skillsOffered, setSkillsOffered] = useState([]);
   const [skillsWanted, setSkillsWanted] = useState([]);
-  const [availability, setAvailability] = useState([]);
+  const [availability, setAvailability] = useState('weekday');
   const [isPublic, setIsPublic] = useState(true);
   const [image, setImage] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    if (!name || !email || !password || !skillsOffered.length || !skillsWanted.length || !availability.length || !image) {
-      setError("Please fill all fields including image.");
+    if (
+      !name ||
+      !location ||
+      !email ||
+      !password ||
+      !skillsOffered.length ||
+      !skillsWanted.length ||
+      !availability ||
+      !image
+    ) {
+      setError('Please fill all fields including image.');
       return;
     }
 
     const formData = new FormData();
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("isPublic", isPublic);
-
-    skillsOffered.forEach(skill => formData.append("skillsOffered", skill));
-    skillsWanted.forEach(skill => formData.append("skillsWanted", skill));
-    availability.forEach(slot => formData.append("availability", slot));
-    formData.append("image", image);
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('location', location);
+    formData.append('isPublic', isPublic);
+    skillsOffered.forEach((skill) => formData.append('skillsOffered', skill));
+    skillsWanted.forEach((skill) => formData.append('skillsWanted', skill));
+    formData.append('availability', availability);
+    formData.append('image', image);
 
     try {
-      await axios.post("/api/auth/register", formData);
-      navigate("/login");
+      const res = await axios.post('/api/auth/register', formData);
+      console.log(res);
+      navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong");
+      setError(err.response?.data?.message || 'Something went wrong');
     }
   };
 
-  const handleMultiValue = (input, setter) => {
-    const items = input.split(",").map(i => i.trim()).filter(Boolean);
-    setter(items);
+  const handleAddSkill = (e, setter, array) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const value = e.target.value.trim();
+      if (value && !array.includes(value)) {
+        setter([...array, value]);
+        e.target.value = '';
+      }
+    }
+  };
+
+  const handleRemoveSkill = (skill, setter, array) => {
+    setter(array.filter((s) => s !== skill));
   };
 
   return (
@@ -50,7 +71,6 @@ const Signup = () => {
       <div className='w-full max-w-md p-8 rounded-lg shadow-lg bg-white border border-gray-300'>
         <h1 className='text-3xl font-bold mb-6 text-center'>Signup</h1>
         {error && <p className='text-red-500 mb-4 text-center'>{error}</p>}
-
         <input
           type='text'
           value={name}
@@ -58,7 +78,6 @@ const Signup = () => {
           className='w-full p-3 mb-3 rounded-lg border bg-gray-200'
           placeholder='Full Name'
         />
-
         <input
           type='email'
           value={email}
@@ -66,7 +85,6 @@ const Signup = () => {
           className='w-full p-3 mb-3 rounded-lg border bg-gray-200'
           placeholder='Email'
         />
-
         <input
           type='password'
           value={password}
@@ -74,57 +92,126 @@ const Signup = () => {
           className='w-full p-3 mb-3 rounded-lg border bg-gray-200'
           placeholder='Password'
         />
-
         <input
           type='text'
-          onChange={(e) => handleMultiValue(e.target.value, setSkillsOffered)}
+          onKeyDown={(e) => handleAddSkill(e, setSkillsOffered, skillsOffered)}
           className='w-full p-3 mb-3 rounded-lg border bg-gray-200'
-          placeholder='Skills Offered (comma-separated)'
+          placeholder='Enter Skills Offered (press Enter)'
         />
-
-        <input
-          type='text'
-          onChange={(e) => handleMultiValue(e.target.value, setSkillsWanted)}
-          className='w-full p-3 mb-3 rounded-lg border bg-gray-200'
-          placeholder='Skills Wanted (comma-separated)'
-        />
-
-        <input
-          type='text'
-          onChange={(e) => handleMultiValue(e.target.value, setAvailability)}
-          className='w-full p-3 mb-3 rounded-lg border bg-gray-200'
-          placeholder='Availability (e.g., Evenings, Weekends)'
-        />
-
-        <div className='mb-3'>
-          <label className='block text-sm font-semibold mb-1'>Profile Image</label>
-          <input
-            type='file'
-            accept='image/*'
-            onChange={(e) => setImage(e.target.files[0])}
-            className='w-full'
-          />
+        <div className='flex flex-wrap gap-2 mb-3'>
+          {skillsOffered.map((skill) => (
+            <span
+              key={skill}
+              className='px-4 py-2 bg-green-100 text-green-600 rounded-full flex items-center gap-2 text-sm font-medium'
+            >
+              {skill}
+              <button
+                onClick={() =>
+                  handleRemoveSkill(skill, setSkillsOffered, skillsOffered)
+                }
+                className='text-red-400 hover:text-red-600'
+              >
+                &times;
+              </button>
+            </span>
+          ))}
         </div>
-
+        <input
+          type='text'
+          onKeyDown={(e) => handleAddSkill(e, setSkillsWanted, skillsWanted)}
+          className='w-full p-3 mb-3 rounded-lg border bg-gray-200'
+          placeholder='Enter Skills Wanted (press Enter)'
+        />
+        <div className='flex flex-wrap gap-2 mb-3'>
+          {skillsWanted.map((skill) => (
+            <span
+              key={skill}
+              className='px-4 py-2 bg-purple-100 text-purple-600 rounded-full flex items-center gap-2 text-sm font-medium'
+            >
+              {skill}
+              <button
+                onClick={() =>
+                  handleRemoveSkill(skill, setSkillsWanted, skillsWanted)
+                }
+                className='text-red-400 hover:text-red-600'
+              >
+                &times;
+              </button>
+            </span>
+          ))}
+        </div>
+        <input
+          type='text'
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className='w-full p-3 mb-3 rounded-lg border bg-gray-200'
+          placeholder='Location'
+        />
         <div className='mb-4'>
-          <label className='block text-sm font-semibold mb-1'>Profile Visibility</label>
+          <label className='block text-sm font-semibold mb-1'>
+            Availability
+          </label>
           <select
-            value={isPublic}
-            onChange={(e) => setIsPublic(e.target.value === "true")}
+            value={availability}
+            onChange={(e) => setAvailability(e.target.value)}
             className='w-full p-3 rounded-lg border bg-gray-200'
           >
-            <option value="true">Public</option>
-            <option value="false">Private</option>
+            <option value='weekday'>Weekday</option>
+            <option value='weekend'>Weekend</option>
+            <option value='morning'>Morning</option>
+            <option value='afternoon'>Afternoon</option>
+            <option value='evening'>Evening</option>
           </select>
         </div>
-
+        <div className='mb-3'>
+          <label className='block text-sm font-semibold mb-1'>
+            Profile Image
+          </label>
+          {!image ? (
+            <button
+              onClick={() => document.getElementById('fileInput').click()}
+              className='px-4 py-2 bg-purple-100 text-purple-600 rounded-full flex items-center gap-2 text-sm font-medium'
+            >
+              Choose File
+            </button>
+          ) : (
+            <span className='px-4 py-2 bg-purple-100 text-purple-600 rounded-full flex items-center gap-2 text-sm font-medium'>
+              {image.name}
+              <button
+                onClick={() => setImage(null)}
+                className='text-red-400 hover:text-red-600'
+              >
+                &times;
+              </button>
+            </span>
+          )}
+          <input
+            type='file'
+            id='fileInput'
+            accept='image/*'
+            onChange={(e) => setImage(e.target.files[0])}
+            className='hidden'
+          />
+        </div>
+        <div className='mb-4'>
+          <label className='block text-sm font-semibold mb-1'>
+            Profile Visibility
+          </label>
+          <select
+            value={isPublic}
+            onChange={(e) => setIsPublic(e.target.value === 'true')}
+            className='w-full p-3 rounded-lg border bg-gray-200'
+          >
+            <option value='true'>Public</option>
+            <option value='false'>Private</option>
+          </select>
+        </div>
         <button
           onClick={handleSubmit}
           className='bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold transition w-full'
         >
           Signup
         </button>
-
         <div className='mt-4 text-center'>
           <Link
             to='/login'
