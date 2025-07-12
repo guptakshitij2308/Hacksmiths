@@ -33,5 +33,6 @@ app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use(compression());
 
 app.use("/api/auth", require("./routes/auth.routes"));
+app.use("/api/user", require("./routes/user.routes"));
 
 module.exports = app;
