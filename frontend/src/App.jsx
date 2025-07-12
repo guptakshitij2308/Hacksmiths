@@ -1,7 +1,7 @@
 import "./App.css";
 import Footer from "./components/Footer.jsx";
 import Navbar from "./components/Navbar.jsx";
-import Login from "./pages/Login";
+import Login from "./pages/login";
 import Home from "./pages/Home";
 import SignUp from "./pages/Signup";
 import Profile from "./pages/Profile";
@@ -39,7 +39,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/user-details/:id" element={<UserProfile />} />
+          <Route path="/user-details/:email" element={<UserProfile />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Route>
       </Routes>
