@@ -47,6 +47,7 @@ exports.updateProfile = async (req, res, next) => {
 // ✅ Get Another User by ID
 exports.getUserByEmail = async (req, res, next) => {
   try {
+    console.log("Fetching user by email:", req.params.email);
     const user = await User.findOne({ email: req.params.email }).select(
       "-password"
     );

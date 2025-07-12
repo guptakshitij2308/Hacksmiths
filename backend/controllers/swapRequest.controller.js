@@ -136,3 +136,37 @@ exports.getSwapRequestById = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getIncomingSwapRequests = async (req, res, next) => {
+  try {
+    const { email } = req.query;
+    console.log(email);
+    if (!email) {
+      return next(new AppError("Email is required", 400));
+    }
+
+    const requests = await SwapRequest.find({
+      requestedUserEmail: email,
+    }).lean();
+
+    const enrichedRequests = await Promise.all(
+      requests.map(async (req) => {
+        const user = await User.findOne({
+          email: req.requestingUserEmail,
+        }).select("name profilePhoto");
+        return {
+          ...req,
+          requesterName: user?.name || "Unknown",
+          requesterPhoto: user?.profilePhoto || null,
+        };
+      })
+    );
+
+    res.status(200).json({
+      message: "Incoming swap requests fetched successfully",
+      requests: enrichedRequests,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
