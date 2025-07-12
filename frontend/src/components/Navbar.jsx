@@ -7,24 +7,20 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 
-import { AuthContext } from "../context/AuthContext"; // adjust path
+import { AuthContext } from "../context/AuthContext"; // adjust path if needed
 
 const Navbar = () => {
   const navigate = useNavigate();
-
   const { userInfo, setUserInfo } = useContext(AuthContext);
 
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-
   const dropdownRef = useRef(null);
 
-  // ✅ Set userInfo from localStorage
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     setUserInfo(user);
   }, []);
 
-  // ✅ Listen to localStorage changes
   useEffect(() => {
     const handleStorageChange = () => {
       const updatedUser = JSON.parse(localStorage.getItem("user"));
@@ -62,37 +58,36 @@ const Navbar = () => {
 
   return (
     <nav className="bg-gray-50 text-gray-900 shadow-md sticky top-0 z-50">
-      <div className="mx-auto flex justify-between items-center p-4 max-w-7xl">
-        {/* Left - Logo */}
-        <Link
-          to="/"
-          className="text-xl font-semibold flex items-center space-x-2"
-        >
-          <div className="text-blue-600 text-2xl flex items-center space-x-1">
-            <FaUsers />
-            <FaExchangeAlt />
-          </div>
-          <span className="ml-3">Skill Swap</span>
-        </Link>
-
-        {/* Center - Navigation Links */}
-        <div className="flex items-center justify-between space-x-6">
+      <div className="mx-auto grid grid-cols-3 items-center p-4 max-w-7xl">
+        {/* Left: Logo */}
+        <div className="flex items-center space-x-2">
           <Link
             to="/"
-            className="text-md hover:text-blue-400 transition-all duration-300 transform hover:scale-105"
+            className="text-xl font-semibold flex items-center space-x-2"
           >
+            <div className="text-blue-600 text-2xl flex items-center space-x-1">
+              <FaUsers />
+              <FaExchangeAlt />
+            </div>
+            <span>Skill Swap</span>
+          </Link>
+        </div>
+
+        {/* Center: Navigation */}
+        <div className="flex justify-center space-x-36">
+          <Link to="/" className="text-md hover:underline underline-offset-4">
             Home
           </Link>
           <Link
             to="/swap"
-            className="text-md hover:text-blue-400 transition-all duration-300 transform hover:scale-105"
+            className="text-md hover:underline underline-offset-4"
           >
             Swap Requests
           </Link>
         </div>
 
-        {/* Right - Auth Section */}
-        <div className="relative" ref={dropdownRef}>
+        {/* Right: Avatar / Login */}
+        <div className="flex justify-end relative" ref={dropdownRef}>
           {userInfo ? (
             <button
               onClick={toggleDropdown}
@@ -105,8 +100,8 @@ const Navbar = () => {
                   className="w-9 h-9 rounded-full object-cover border border-gray-300"
                 />
               ) : (
-                <div className="w-9 h-9 bg-blue-500 text-white flex items-center justify-center rounded-full text-sm font-bold">
-                  {JSON.parse(userInfo)?.name.charAt(0).toUpperCase()}
+                <div className="w-9 h-9 bg-blue-500 text-white flex items-center justify-center rounded-full text-sm font-bold border border-gray-300">
+                  {JSON.parse(userInfo)?.name?.charAt(0).toUpperCase()}
                 </div>
               )}
             </button>
@@ -119,6 +114,7 @@ const Navbar = () => {
             </Link>
           )}
 
+          {/* Dropdown */}
           {isDropdownOpen && userInfo && (
             <div className="absolute right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg py-2 w-44 z-50">
               <div className="px-4 py-2 text-sm text-gray-800">
