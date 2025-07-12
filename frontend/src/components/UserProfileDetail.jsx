@@ -2,15 +2,32 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import SkillSwapModal from "./SkillsSwapModal.jsx";
+import FeedbackModal from "./FeedbackModal.jsx";
 
 const UserProfile = () => {
   const { email } = useParams(); // ⬅️ Get email from URL
   console.log(email);
   const navigate = useNavigate();
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  console.log(storedUser);
 
   const [user, setUser] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [mySkills, setMySkills] = useState([]);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [feedbackUser, setFeedbackUser] = useState(null);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [averageRating, setAverageRating] = useState(null);
+
+  const openFeedbackModal = (user) => {
+    setFeedbackUser(user);
+    setFeedbackModalOpen(true);
+  };
+
+  const closeFeedbackModal = () => {
+    setFeedbackUser(null);
+    setFeedbackModalOpen(false);
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -42,9 +59,20 @@ const UserProfile = () => {
         console.error("Failed to fetch my skills", err);
       }
     };
+    const fetchFeedbacks = async () => {
+      try {
+        const res = await axios.get(`/api/ratings/user/${email}`);
+        console.log("Feedbacks fetched:", res.data);
+        setFeedbacks(res.data.data || []);
+        setAverageRating(res.data.averageRating);
+      } catch (err) {
+        console.error("Failed to fetch feedbacks", err);
+      }
+    };
 
     fetchUser();
     fetchMySkills();
+    fetchFeedbacks();
   }, [email, navigate]);
 
   const openModal = () => setModalOpen(true);
@@ -80,8 +108,11 @@ const UserProfile = () => {
               <h1 className="text-2xl font-bold">{user.name}</h1>
               <p className="text-gray-600 text-sm mt-1">
                 <span className="font-semibold">Rating:</span>{" "}
-                {user.rating ? `${user.rating}/5 ⭐` : "New User"}
+                {averageRating
+                  ? `${averageRating.toFixed(1)}/5 ⭐`
+                  : "New User"}
               </p>
+
               <p className="text-sm text-gray-600 mt-1">
                 <span className="font-semibold">Availability:</span>{" "}
                 {user.availability?.join(", ") || "Not specified"}
@@ -89,12 +120,20 @@ const UserProfile = () => {
             </div>
           </div>
 
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow"
-            onClick={openModal}
-          >
-            Request
-          </button>
+          <div className="flex flex-col items-center gap-2 ml-4">
+            <button
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow w-28"
+              onClick={() => openModal(user)}
+            >
+              Request
+            </button>
+            <button
+              onClick={() => openFeedbackModal(user)}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow w-28"
+            >
+              Feedback
+            </button>
+          </div>
         </div>
 
         {/* Skills Offered */}
@@ -140,22 +179,25 @@ const UserProfile = () => {
         </div>
 
         {/* Feedbacks */}
-        {user.feedbacks?.length > 0 && (
+        {feedbacks.length > 0 && (
           <div className="mt-8">
             <h2 className="text-lg font-semibold text-gray-800 mb-2">
               Ratings & Feedback
             </h2>
             <div className="overflow-x-auto">
               <div className="flex gap-4 w-max pb-2">
-                {user.feedbacks.map((fb, idx) => (
+                {feedbacks.map((fb, idx) => (
                   <div
                     key={idx}
                     className="min-w-[250px] max-w-xs p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm"
                   >
                     <p className="text-sm font-medium text-blue-700">
-                      ⭐ {fb.score}/5
+                      ⭐ {fb.rating}/5
                     </p>
                     <p className="text-sm text-gray-700 mt-1">{fb.comment}</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      by {fb.fromUser?.name || fb.fromUser?.email}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -170,6 +212,12 @@ const UserProfile = () => {
           onSubmit={handleSubmitSwap}
           user={user}
           mySkills={mySkills}
+        />
+        <FeedbackModal
+          isOpen={feedbackModalOpen}
+          onClose={closeFeedbackModal}
+          user={user}
+          currentUserEmail={storedUser.email}
         />
       </div>
     </div>

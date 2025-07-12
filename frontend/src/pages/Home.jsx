@@ -3,6 +3,7 @@ import SkillSwapModal from "../components/SkillsSwapModal.jsx";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useTheme } from "../context/themecontext";
+import FeedbackModal from "../components/FeedbackModal.jsx";
 
 const storedUser = JSON.parse(localStorage.getItem("user"));
 console.log(storedUser);
@@ -18,6 +19,19 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [mySkills, setMySkills] = useState([]);
+
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [feedbackUser, setFeedbackUser] = useState(null);
+
+  const openFeedbackModal = (user) => {
+    setFeedbackUser(user);
+    setFeedbackModalOpen(true);
+  };
+
+  const closeFeedbackModal = () => {
+    setFeedbackUser(null);
+    setFeedbackModalOpen(false);
+  };
 
   useEffect(() => {
     const fetchMySkills = async () => {
@@ -200,24 +214,18 @@ const Home = () => {
                         ))}
                       </div>
                     )}
-                    <div className="text-xs text-gray-500 mt-1">
-                      {user.rating ? (
-                        <span>Rating: {user.rating}/5</span>
-                      ) : (
-                        <span className="text-green-500 font-medium">
-                          New User
-                        </span>
-                      )}
-                    </div>
                   </div>
                 </div>
               </Link>
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow"
-                onClick={() => openModal(user)}
-              >
-                Request
-              </button>
+
+              <div className="flex flex-col items-center gap-2 ml-4">
+                <button
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow w-28"
+                  onClick={() => openModal(user)}
+                >
+                  Request
+                </button>
+              </div>
             </div>
           ))
         )}
@@ -278,6 +286,13 @@ const Home = () => {
         onClose={closeModal}
         user={selectedUser}
         mySkills={mySkills}
+      />
+
+      <FeedbackModal
+        isOpen={feedbackModalOpen}
+        onClose={closeFeedbackModal}
+        user={selectedUser}
+        currentUserEmail={storedUser?.email}
       />
     </div>
   );
