@@ -1,18 +1,20 @@
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
 import Footer from "./components/Footer.jsx";
 import Navbar from "./components/Navbar.jsx";
-import ListUsers from "./pages/ListUsers.jsx";
+import Home from "./pages/Home.jsx";
 import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import UserProfile from "./components/UserProfileDetail.jsx";
 function App() {
   return (
     <Router>
       <Layout>
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/list-users" element={<ListUsers />} />
+          <Route path="/user-details/:username" element={<UserProfile />} />
         </Routes>
       </Layout>
       ?
