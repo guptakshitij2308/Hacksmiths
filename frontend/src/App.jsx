@@ -1,16 +1,31 @@
-import './App.css';
-import Login from './pages/login';
-import SignUp from './pages/signup';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import "./App.css";
+import Footer from "./components/Footer.jsx";
+import Navbar from "./components/Navbar.jsx";
+import Login from "./pages/Login";
+import SignUp from "./pages/Signup";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<SignUp />} />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+        </Routes>
+      </Layout>
+      ?
     </Router>
   );
 }
+
+const Layout = ({ children }) => {
+  return (
+    <>
+      <Navbar />
+      <main>{children}</main>
+      <Footer />
+    </>
+  );
+};
 
 export default App;
