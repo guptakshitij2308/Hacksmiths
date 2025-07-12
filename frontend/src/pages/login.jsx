@@ -28,7 +28,7 @@ const LoginPage = () => {
 
       // ✅ Save user info in localStorage
       localStorage.setItem("token", token);
-      localStorage.setItem("userInfo", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(user));
 
       // ✅ Optional: Set auth header globally (if needed)
       // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
