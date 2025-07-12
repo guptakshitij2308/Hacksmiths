@@ -1,20 +1,19 @@
-import './App.css';
-import Login from './pages/login';
-import SignUp from './pages/signup';
-import Profile from './pages/Profile';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import ListUsers from './pages/ListUsers';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import "./App.css";
+import Footer from "./components/Footer.jsx";
+import Navbar from "./components/Navbar.jsx";
+import ListUsers from "./pages/ListUsers.jsx";
+import Login from "./pages/Login";
+import SignUp from "./pages/Signup";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 function App() {
   return (
     <Router>
       <Layout>
         <Routes>
-          <Route path='/login' element={<Login />} />
-          <Route path='/signup' element={<SignUp />} />
-          <Route path='/list-users' element={<ListUsers />} />
-          <Route path='/profile' element={<Profile />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/user-details/:username" element={<UserProfile />} />
         </Routes>
       </Layout>
       ?

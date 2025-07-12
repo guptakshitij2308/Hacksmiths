@@ -1,96 +1,78 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Moon, Sun } from 'lucide-react';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [darkMode, setDarkMode] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    if (!email || !password) {
+      setError("Please fill all fields.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("/api/auth/login", {
+        email,
+        password,
+      });
+
+      const { token, user } = response.data;
+
+      // ✅ Save token to localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // ✅ Navigate to homepage or dashboard
+      navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    }
+  };
+
   return (
-    <div
-      className={`${
-        darkMode ? 'bg-gray-900 text-white' : 'bg-cream-100 text-gray-900'
-      } min-h-screen flex flex-col transition-colors duration-500 relative`}
-    >
-      <header
-        className={`flex items-center justify-between p-4 shadow-md ${
-          darkMode
-            ? 'bg-gray-800 border-b border-gray-700'
-            : 'bg-cream-200 border-b border-cream-300'
-        }`}
-      >
-        <h1 className='text-lg font-semibold'>Skill Swap Platform</h1>
-        <nav>
-          <Link
-            to='/'
-            className='px-4 py-2 border rounded-full hover:bg-gray-100 transition'
+    <div className="min-h-screen flex items-center justify-center p-8 bg-gray-100 text-gray-900">
+      <div className="w-full max-w-md p-8 rounded-lg shadow-lg bg-gray-50 border border-gray-300">
+        <h1 className="text-3xl font-bold mb-6 text-center">Login</h1>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full mb-4 p-2 rounded-lg border-2 bg-gray-200 text-gray-900 border-gray-400"
+            placeholder="Email"
+            required
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full mb-4 p-2 rounded-lg border-2 bg-gray-200 text-gray-900 border-gray-400"
+            placeholder="Password"
+            required
+          />
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg w-full"
           >
-            Home
+            Login
+          </button>
+        </form>
+
+        <div className="mt-4 text-center">
+          <Link
+            to="/signup"
+            className="text-blue-400 hover:underline hover:text-blue-500"
+          >
+            Don&apos;t have an account? Sign Up
           </Link>
-        </nav>
-      </header>
-      <main className='flex flex-1 items-center justify-center'>
-        <div
-          className={`${
-            darkMode
-              ? 'bg-gray-800 border-gray-700'
-              : 'bg-white border border-cream-300'
-          } w-full max-w-sm p-6 rounded-lg shadow-lg`}
-        >
-          <h2 className='text-center text-xl font-bold mb-6'>
-            User Login Page
-          </h2>
-          {error && <p className='text-red-500 mb-4 text-center'>{error}</p>}
-          <form onSubmit={() => {}} className='space-y-4'>
-            <div>
-              <label className='block mb-1 font-medium'>Email</label>
-              <input
-                type='email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={`w-full p-2 rounded border ${
-                  darkMode
-                    ? 'bg-gray-700 border-gray-600'
-                    : 'bg-cream-50 border-cream-300'
-                }`}
-                placeholder='Email'
-                required
-              />
-            </div>
-            <div>
-              <label className='block mb-1 font-medium'>Password</label>
-              <input
-                type='password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`w-full p-2 rounded border ${
-                  darkMode
-                    ? 'bg-gray-700 border-gray-600'
-                    : 'bg-cream-50 border-cream-300'
-                }`}
-                placeholder='Password'
-                required
-              />
-            </div>
-            <button
-              type='submit'
-              className={`block mx-auto px-6 py-2 rounded-full border ${
-                darkMode
-                  ? 'bg-purple-600 text-white hover:bg-purple-700'
-                  : 'bg-cream-300 text-gray-900 hover:bg-cream-400'
-              }`}
-            >
-              Login
-            </button>
-            <div className='text-center'>
-              <Link to='/forgot' className='text-blue-600 hover:underline'>
-                Forgot username/password
-              </Link>
-            </div>
-          </form>
         </div>
       </main>
       <button
