@@ -3,13 +3,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 // JWT Generator
+
 const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
-  });
+  return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
-// @route   POST /api/auth/register
 exports.registerUser = async (req, res) => {
   const {
     name,
@@ -22,16 +20,25 @@ exports.registerUser = async (req, res) => {
     role,
   } = req.body;
 
+  // ✅ Check required fields
   if (
     !name ||
     !email ||
     !password ||
-    !skillsOffered?.length ||
-    !skillsWanted?.length ||
-    !availability?.length ||
-    isPublic === undefined
+    !skillsOffered ||
+    !skillsWanted ||
+    !availability ||
+    typeof isPublic === "undefined"
   ) {
     return res.status(400).json({ message: "All fields are required" });
+  }
+
+  // ✅ Handle profile image if uploaded
+  let profilePhoto = "";
+  if (req.file && req.file.path) {
+    profilePhoto = req.file.path; // Cloudinary returns image URL in `path`
+  } else {
+    return res.status(400).json({ message: "Profile image is required" });
   }
 
   try {
@@ -39,17 +46,19 @@ exports.registerUser = async (req, res) => {
     if (userExists)
       return res.status(400).json({ message: "User already exists" });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPwd = await bcrypt.hash(password, salt);
+    const hashedPwd = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
       name,
       email,
       password: hashedPwd,
       role: role || "user",
-      skillsOffered,
-      skillsWanted,
-      availability,
+      profilePhoto,
+      skillsOffered: Array.isArray(skillsOffered)
+        ? skillsOffered
+        : [skillsOffered],
+      skillsWanted: Array.isArray(skillsWanted) ? skillsWanted : [skillsWanted],
+      availability: Array.isArray(availability) ? availability : [availability],
       isPublic,
     });
 
@@ -61,14 +70,15 @@ exports.registerUser = async (req, res) => {
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
+        profilePhoto: newUser.profilePhoto,
       },
       token,
     });
   } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
-
 // @route   POST /api/auth/login
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
