@@ -33,18 +33,18 @@ exports.registerUser = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  // ✅ Handle profile image if uploaded
-  let profilePhoto = "";
-  if (req.file && req.file.path) {
-    profilePhoto = req.file.path; // Cloudinary returns image URL in `path`
-  } else {
-    return res.status(400).json({ message: "Profile image is required" });
-  }
-
   try {
     const userExists = await User.findOne({ email });
     if (userExists)
       return res.status(400).json({ message: "User already exists" });
+
+    // ✅ Handle profile image
+    let profilePhoto = "";
+    if (req.file && req.file.path) {
+      profilePhoto = req.file.path;
+    } else {
+      profilePhoto = ""; // Allow default/fallback image (optional)
+    }
 
     const hashedPwd = await bcrypt.hash(password, 10);
 
@@ -75,38 +75,40 @@ exports.registerUser = async (req, res) => {
       token,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Register error:", err);
+    res.status(500).json({ message: "Server error during registration" });
   }
 };
+
 // @route   POST /api/auth/login
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password)
+    return res.status(400).json({ message: "Email and password are required" });
+
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
-    console.log(user);
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
 
-    console.log("User found:", user);
-
     const token = generateToken(user._id, user.role);
 
-    res.json({
+    res.status(200).json({
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        profilePhoto: user.profilePhoto,
       },
       token,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Login error:", err);
     res.status(500).json({ message: "Login error" });
   }
 };

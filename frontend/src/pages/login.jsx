@@ -24,11 +24,13 @@ const LoginPage = () => {
 
       const { token, user } = response.data;
 
-      // ✅ Save token to localStorage
+      // ✅ Save user info in localStorage
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("userInfo", JSON.stringify(user));
 
-      // ✅ Navigate to homepage or dashboard
+      // ✅ Optional: Set auth header globally (if needed)
+      // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
       navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
@@ -74,7 +76,7 @@ const LoginPage = () => {
             Don&apos;t have an account? Sign Up
           </Link>
         </div>
-    </div>
+      </div>
     </div>
   );
 };
