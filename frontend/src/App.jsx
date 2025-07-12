@@ -8,6 +8,7 @@ import Profile from './pages/Profile';
 import SwapRequest from './pages/Swaprequest.jsx';
 import UserProfile from './components/UserProfileDetail.jsx';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import AdminDashboard from './pages/AdminDashboard.jsx';
 function App() {
   return (
     <Router>
@@ -19,6 +20,8 @@ function App() {
           <Route path='/signup' element={<SignUp />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/user-details/:username' element={<UserProfile />} />
+          <Route path='/' element={<Home />} />
+          <Route path='/admin' element={<AdminDashboard />} />
         </Routes>
       </Layout>
       ?
