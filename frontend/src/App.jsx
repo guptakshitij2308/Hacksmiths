@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import SignUp from './pages/Signup';
 import Profile from './pages/Profile';
+import SwapRequest from './pages/Swaprequest.jsx';
 import UserProfile from './components/UserProfileDetail.jsx';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 function App() {
@@ -13,6 +14,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/swaprequest' element={<SwapRequest />} />
           <Route path='/login' element={<Login />} />
           <Route path='/signup' element={<SignUp />} />
           <Route path='/profile' element={<Profile />} />
