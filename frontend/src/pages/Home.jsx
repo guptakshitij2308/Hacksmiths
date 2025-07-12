@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import SkillSwapModal from "../components/SkillsSwapModal.jsx";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
-const mySkills = ["JavaScript", "React", "Excel"];
+const storedUser = JSON.parse(localStorage.getItem("user"));
+console.log(storedUser);
 
 const Home = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -14,7 +15,30 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const navigate = useNavigate();
+  const [mySkills, setMySkills] = useState([]);
+
+  useEffect(() => {
+    const fetchMySkills = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        const token = localStorage.getItem("token");
+
+        if (!storedUser || !token) return;
+
+        const { data } = await axios.get(`/api/user/${storedUser.email}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setMySkills(data.skillsOffered || []);
+      } catch (err) {
+        console.error("Failed to fetch your skills:", err);
+      }
+    };
+
+    fetchMySkills();
+  }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -53,12 +77,6 @@ const Home = () => {
   const closeModal = () => {
     setModalOpen(false);
     setSelectedUser(null);
-  };
-
-  const handleSubmitSwap = (data) => {
-    console.log("Swap Request Submitted:", data);
-    // TODO: Send POST to backend
-    closeModal();
   };
 
   return (
@@ -225,7 +243,6 @@ const Home = () => {
       <SkillSwapModal
         isOpen={modalOpen}
         onClose={closeModal}
-        onSubmit={handleSubmitSwap}
         user={selectedUser}
         mySkills={mySkills}
       />
