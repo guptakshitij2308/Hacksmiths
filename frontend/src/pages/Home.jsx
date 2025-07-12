@@ -3,7 +3,7 @@ import SkillSwapModal from "../components/SkillsSwapModal.jsx";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const mySkills = ["JavaScript", "React", "Excel"]; // Mocked skills
+const mySkills = ["JavaScript", "React", "Excel"];
 
 const Home = () => {
   const [modalOpen, setModalOpen] = useState(false);
