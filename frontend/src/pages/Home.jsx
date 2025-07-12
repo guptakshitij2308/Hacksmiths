@@ -100,7 +100,7 @@ const Home = () => {
               key={idx}
               className="flex items-center justify-between p-5 bg-white border border-gray-300 rounded-lg shadow-md hover:shadow-lg transition"
             >
-              <Link to={`/user-details/${user.name.replace(/\s+/g, "-")}`}>
+              <Link to={`/user-details/${user.name}`}>
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300 text-sm text-gray-600 overflow-hidden">
                     {user.profilePhoto ? (
