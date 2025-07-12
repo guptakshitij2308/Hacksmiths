@@ -98,9 +98,9 @@ const Navbar = () => {
               onClick={toggleDropdown}
               className="flex items-center space-x-2 focus:outline-none"
             >
-              {userInfo.profilePhoto ? (
+              {JSON.parse(userInfo)?.profilePhoto ? (
                 <img
-                  src={userInfo.profilePhoto}
+                  src={JSON.parse(userInfo)?.profilePhoto}
                   alt="Avatar"
                   className="w-9 h-9 rounded-full object-cover border border-gray-300"
                 />
@@ -123,7 +123,9 @@ const Navbar = () => {
             <div className="absolute right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg py-2 w-44 z-50">
               <div className="px-4 py-2 text-sm text-gray-800">
                 Signed in as <br />
-                <span className="font-semibold">{userInfo.name}</span>
+                <span className="font-semibold">
+                  {JSON.parse(userInfo)?.name}
+                </span>
               </div>
               <hr className="my-1" />
               <button
