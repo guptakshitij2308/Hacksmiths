@@ -15,32 +15,32 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      const queryParams = [];
-
-      if (availabilityFilter)
-        queryParams.push(`availability=${availabilityFilter}`);
-      if (searchTerm) queryParams.push(`skills=${searchTerm}`);
-      queryParams.push(`page=${page}`, `limit=10`);
-
-      const endpoint =
-        queryParams.length > 0
-          ? `/api/user/search?${queryParams.join("&")}`
-          : `/api/user/all?page=${page}&limit=6`;
-
-      const { data } = await axios.get(endpoint);
-      setUsers(data.users || []);
-      setTotalPages(data.totalPages || 1);
-    } catch (err) {
-      console.error("Failed to fetch users:", err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      try {
+        const queryParams = [];
+
+        if (availabilityFilter)
+          queryParams.push(`availability=${availabilityFilter}`);
+        if (searchTerm) queryParams.push(`skills=${searchTerm}`);
+        queryParams.push(`page=${page}`, `limit=10`);
+
+        const endpoint =
+          queryParams.length > 0
+            ? `/api/user/search?${queryParams.join("&")}`
+            : `/api/user/all?page=${page}&limit=6`;
+
+        const { data } = await axios.get(endpoint);
+        setUsers(data.users || []);
+        setTotalPages(data.totalPages || 1);
+      } catch (err) {
+        console.error("Failed to fetch users:", err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUsers();
   }, [availabilityFilter, searchTerm, page]);
 
