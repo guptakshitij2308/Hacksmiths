@@ -1,9 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 
-const SkillSwapModal = ({ isOpen, onClose, onSubmit, user, mySkills = [] }) => {
-  const [mySkill, setMySkill] = React.useState("");
-  const [theirSkill, setTheirSkill] = React.useState("");
-  const [message, setMessage] = React.useState("");
+const SkillSwapModal = ({ isOpen, onClose, user, mySkills = [] }) => {
+  const [mySkill, setMySkill] = useState("");
+  const [theirSkill, setTheirSkill] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const modalRef = useRef(null);
 
@@ -19,16 +21,50 @@ const SkillSwapModal = ({ isOpen, onClose, onSubmit, user, mySkills = [] }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  const handleSubmit = () => {
-    if (mySkill && theirSkill) {
-      onSubmit({ mySkill, theirSkill, message });
+  const handleSubmit = async () => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!storedUser || !token) {
+      alert("Please log in to send a swap request.");
+      return;
+    }
+
+    if (!mySkill || !theirSkill) {
+      alert("Please select both your skill and the one you want.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const payload = {
+        offeredSkills: [mySkill],
+        requestedSkills: [theirSkill],
+        message,
+        requestingUserEmail: storedUser.email,
+        requestedUserEmail: user.email,
+      };
+
+      await axios.post("/api/swap/request", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("Swap request submitted successfully!");
       setMySkill("");
       setTheirSkill("");
       setMessage("");
+      onClose();
+    } catch (err) {
+      console.error("Error submitting swap request:", err);
+      alert("Failed to submit swap request.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !user) return null;
 
   return (
     <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50">
@@ -74,7 +110,7 @@ const SkillSwapModal = ({ isOpen, onClose, onSubmit, user, mySkills = [] }) => {
           onChange={(e) => setTheirSkill(e.target.value)}
         >
           <option value="">Select skill</option>
-          {user?.skillsWanted?.map((skill, idx) => (
+          {user?.skillsOffered?.map((skill, idx) => (
             <option key={idx} value={skill}>
               {skill}
             </option>
@@ -92,9 +128,12 @@ const SkillSwapModal = ({ isOpen, onClose, onSubmit, user, mySkills = [] }) => {
         <div className="flex justify-end">
           <button
             onClick={handleSubmit}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+            disabled={loading}
+            className={`bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            Submit
+            {loading ? "Submitting..." : "Submit"}
           </button>
         </div>
       </div>

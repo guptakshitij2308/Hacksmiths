@@ -32,7 +32,7 @@ const LoginPage = () => {
 
       // ✅ Optional: Set auth header globally (if needed)
       // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUserInfo(JSON.stringify(user));
+      setUserInfo(user);
 
       navigate("/");
     } catch (err) {
