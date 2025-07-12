@@ -2,8 +2,10 @@ import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import { useTheme } from "../context/themecontext";
 
 const Signup = () => {
+  const { darkMode } = useTheme();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
@@ -71,35 +73,69 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8 bg-gray-100 text-gray-900">
-      <div className="w-full max-w-md p-8 rounded-lg shadow-lg bg-white border border-gray-300">
+    <div
+      className={`${
+        darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
+      } min-h-screen flex items-center justify-center p-8`}
+    >
+      <div
+        className={`w-full max-w-md p-8 rounded-lg shadow-lg ${
+          darkMode
+            ? "bg-gray-800 border border-gray-700"
+            : "bg-white border border-gray-300"
+        }`}
+      >
         <h1 className="text-3xl font-bold mb-6 text-center">Signup</h1>
         {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+
+        {/* Name */}
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full p-3 mb-3 rounded-lg border bg-gray-200"
+          className={`w-full p-3 mb-3 rounded-lg border ${
+            darkMode
+              ? "bg-gray-700 border-gray-600"
+              : "bg-gray-200 border-gray-300"
+          }`}
           placeholder="Full Name"
         />
+
+        {/* Email */}
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 mb-3 rounded-lg border bg-gray-200"
+          className={`w-full p-3 mb-3 rounded-lg border ${
+            darkMode
+              ? "bg-gray-700 border-gray-600"
+              : "bg-gray-200 border-gray-300"
+          }`}
           placeholder="Email"
         />
+
+        {/* Password */}
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-3 mb-3 rounded-lg border bg-gray-200"
+          className={`w-full p-3 mb-3 rounded-lg border ${
+            darkMode
+              ? "bg-gray-700 border-gray-600"
+              : "bg-gray-200 border-gray-300"
+          }`}
           placeholder="Password"
         />
+
+        {/* Skills Offered */}
         <input
           type="text"
           onKeyDown={(e) => handleAddSkill(e, setSkillsOffered, skillsOffered)}
-          className="w-full p-3 mb-3 rounded-lg border bg-gray-200"
+          className={`w-full p-3 mb-3 rounded-lg border ${
+            darkMode
+              ? "bg-gray-700 border-gray-600"
+              : "bg-gray-200 border-gray-300"
+          }`}
           placeholder="Enter Skills Offered (press Enter)"
         />
         <div className="flex flex-wrap gap-2 mb-3">
@@ -120,10 +156,16 @@ const Signup = () => {
             </span>
           ))}
         </div>
+
+        {/* Skills Wanted */}
         <input
           type="text"
           onKeyDown={(e) => handleAddSkill(e, setSkillsWanted, skillsWanted)}
-          className="w-full p-3 mb-3 rounded-lg border bg-gray-200"
+          className={`w-full p-3 mb-3 rounded-lg border ${
+            darkMode
+              ? "bg-gray-700 border-gray-600"
+              : "bg-gray-200 border-gray-300"
+          }`}
           placeholder="Enter Skills Wanted (press Enter)"
         />
         <div className="flex flex-wrap gap-2 mb-3">
@@ -144,13 +186,21 @@ const Signup = () => {
             </span>
           ))}
         </div>
+
+        {/* Location */}
         <input
           type="text"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className="w-full p-3 mb-3 rounded-lg border bg-gray-200"
+          className={`w-full p-3 mb-3 rounded-lg border ${
+            darkMode
+              ? "bg-gray-700 border-gray-600"
+              : "bg-gray-200 border-gray-300"
+          }`}
           placeholder="Location"
         />
+
+        {/* Availability */}
         <div className="mb-4">
           <label className="block text-sm font-semibold mb-1">
             Availability
@@ -158,7 +208,11 @@ const Signup = () => {
           <select
             value={availability}
             onChange={(e) => setAvailability(e.target.value)}
-            className="w-full p-3 rounded-lg border bg-gray-200"
+            className={`w-full p-3 rounded-lg border ${
+              darkMode
+                ? "bg-gray-700 border-gray-600"
+                : "bg-gray-200 border-gray-300"
+            }`}
           >
             <option value="weekday">Weekday</option>
             <option value="weekend">Weekend</option>
@@ -167,6 +221,8 @@ const Signup = () => {
             <option value="evening">Evening</option>
           </select>
         </div>
+
+        {/* Image Upload */}
         <div className="mb-3">
           <label className="block text-sm font-semibold mb-1">
             Profile Image
@@ -174,12 +230,22 @@ const Signup = () => {
           {!image ? (
             <button
               onClick={() => document.getElementById("fileInput").click()}
-              className="px-4 py-2 bg-purple-100 text-purple-600 rounded-full flex items-center gap-2 text-sm font-medium"
+              className={`px-4 py-2 ${
+                darkMode
+                  ? "bg-purple-800 text-white"
+                  : "bg-purple-100 text-purple-600"
+              } rounded-full flex items-center gap-2 text-sm font-medium`}
             >
               Choose File
             </button>
           ) : (
-            <span className="px-4 py-2 bg-purple-100 text-purple-600 rounded-full flex items-center gap-2 text-sm font-medium">
+            <span
+              className={`px-4 py-2 ${
+                darkMode
+                  ? "bg-purple-800 text-white"
+                  : "bg-purple-100 text-purple-600"
+              } rounded-full flex items-center gap-2 text-sm font-medium`}
+            >
               {image.name}
               <button
                 onClick={() => setImage(null)}
@@ -197,6 +263,8 @@ const Signup = () => {
             className="hidden"
           />
         </div>
+
+        {/* Visibility */}
         <div className="mb-4">
           <label className="block text-sm font-semibold mb-1">
             Profile Visibility
@@ -204,18 +272,26 @@ const Signup = () => {
           <select
             value={isPublic}
             onChange={(e) => setIsPublic(e.target.value === "true")}
-            className="w-full p-3 rounded-lg border bg-gray-200"
+            className={`w-full p-3 rounded-lg border ${
+              darkMode
+                ? "bg-gray-700 border-gray-600"
+                : "bg-gray-200 border-gray-300"
+            }`}
           >
             <option value="true">Public</option>
             <option value="false">Private</option>
           </select>
         </div>
+
+        {/* Submit */}
         <button
           onClick={handleSubmit}
           className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold transition w-full"
         >
           Signup
         </button>
+
+        {/* Link to Login */}
         <div className="mt-4 text-center">
           <Link
             to="/login"

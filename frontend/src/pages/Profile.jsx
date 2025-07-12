@@ -2,10 +2,12 @@ import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { useTheme } from "../context/themecontext";
 
 const UserProfile = () => {
   const navigate = useNavigate();
   const { userInfo, setUserInfo } = useContext(AuthContext);
+  const { darkMode } = useTheme();
   const token = localStorage.getItem("token");
 
   const [user, setUser] = useState(null);
@@ -35,7 +37,6 @@ const UserProfile = () => {
 
         const data = res.data;
         setUser(data);
-        console.log(data);
 
         setFormData({
           name: data.name || "",
@@ -99,7 +100,6 @@ const UserProfile = () => {
       alert("✅ Profile updated successfully!");
       setIsEditing(false);
 
-      // Optionally update global context userInfo if needed:
       setUserInfo({ ...userInfo, name: formData.name });
     } catch (err) {
       console.error("Update failed:", err);
@@ -111,45 +111,52 @@ const UserProfile = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center px-4 py-12 text-gray-900">
-      <div className="bg-white rounded-2xl shadow-xl h-full w-full max-w-5xl p-8 relative grid grid-cols-1 md:grid-cols-2 gap-8 ">
-        {/* Profile Image top-right */}
+    <div
+      className={`min-h-screen flex flex-col items-center justify-center px-4 py-12 ${
+        darkMode
+          ? "bg-gray-900 text-gray-200"
+          : "bg-gradient-to-b from-blue-50 to-purple-50 text-gray-900"
+      }`}
+    >
+      <div
+        className={`rounded-2xl shadow-xl w-full max-w-5xl p-8 relative grid grid-cols-1 md:grid-cols-2 gap-8 border ${
+          darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-300"
+        }`}
+      >
         <div className="absolute top-6 right-6 flex flex-col items-center">
           <img
             src={user?.profilePhoto || "/user.jpg"}
             alt="Profile"
-            className="w-24 h-24 rounded-full object-cover border-2 border-indigo-200 shadow-md"
+            className="w-28 h-28 rounded-full object-cover border-4 border-indigo-200 shadow-md"
           />
         </div>
 
-        {/* Left Column */}
         <div className="space-y-5">
-          <div className="flex items-center gap-4">
-            <label className="w-1/3 font-semibold">Name:</label>
-            <input
-              className="w-2/3 p-2 border rounded-md"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              readOnly={!isEditing}
-            />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <label className="w-1/3 font-semibold">Location:</label>
-            <input
-              className="w-2/3 p-2 border rounded-md"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              readOnly={!isEditing}
-            />
-          </div>
+          {["name", "location"].map((field) => (
+            <div className="flex items-center gap-4" key={field}>
+              <label className="w-1/3 font-semibold capitalize">{field}:</label>
+              <input
+                className={`w-2/3 p-2 border rounded-md ${
+                  darkMode
+                    ? "bg-gray-700 text-gray-200 border-gray-600"
+                    : "bg-white"
+                }`}
+                name={field}
+                value={formData[field]}
+                onChange={handleChange}
+                readOnly={!isEditing}
+              />
+            </div>
+          ))}
 
           <div className="flex items-center gap-4">
             <label className="w-1/3 font-semibold">Availability:</label>
             <input
-              className="w-2/3 p-2 border rounded-md"
+              className={`w-2/3 p-2 border rounded-md ${
+                darkMode
+                  ? "bg-gray-700 text-gray-200 border-gray-600"
+                  : "bg-white"
+              }`}
               name="availability"
               value={formData.availability.join(", ")}
               onChange={(e) =>
@@ -174,38 +181,69 @@ const UserProfile = () => {
                   isPublic: e.target.value === "public",
                 })
               }
-              className="w-2/3 p-2 border rounded-md"
+              className={`w-2/3 p-2 border rounded-md ${
+                darkMode
+                  ? "bg-gray-700 text-gray-200 border-gray-600"
+                  : "bg-white"
+              }`}
               disabled={!isEditing}
             >
               <option value="public">Public</option>
               <option value="private">Private</option>
             </select>
           </div>
+        </div>
 
-          <div className="space-y-6 flex justify-between">
-            <div>
+        <div className="space-y-6">
+          {[
+            {
+              label: "Skills Offered:",
+              items: skillsOffered,
+              newSkill,
+              setNewSkill,
+              handleAddSkill,
+              type: "offered",
+            },
+            {
+              label: "Skills Wanted:",
+              items: skillsWanted,
+              newSkill: newWantedSkill,
+              setNewSkill: setNewWantedSkill,
+              handleAddSkill: handleAddWantedSkill,
+              type: "wanted",
+            },
+          ].map((section) => (
+            <div key={section.label}>
               <label className="font-semibold block mb-1">
-                Skills Offered:
+                {section.label}
               </label>
               {isEditing && (
                 <input
-                  value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  onKeyDown={handleAddSkill}
-                  className="w-full p-2 mb-2 border rounded-md"
+                  value={section.newSkill}
+                  onChange={(e) => section.setNewSkill(e.target.value)}
+                  onKeyDown={section.handleAddSkill}
+                  className={`w-full p-2 mb-2 border rounded-md ${
+                    darkMode
+                      ? "bg-gray-700 text-gray-200 border-gray-600"
+                      : "bg-white"
+                  }`}
                   placeholder="Enter skill and press Enter"
                 />
               )}
               <div className="flex flex-wrap gap-2">
-                {skillsOffered.map((skill) => (
+                {section.items.map((skill) => (
                   <span
                     key={skill}
-                    className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                    className={`px-3 py-1 rounded-full text-sm flex items-center gap-1 ${
+                      section.type === "offered"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-purple-100 text-purple-700"
+                    }`}
                   >
                     {skill}
                     {isEditing && (
                       <button
-                        onClick={() => handleRemoveSkill(skill, "offered")}
+                        onClick={() => handleRemoveSkill(skill, section.type)}
                         className="text-red-400 hover:text-red-600"
                       >
                         ×
@@ -215,42 +253,10 @@ const UserProfile = () => {
                 ))}
               </div>
             </div>
-
-            <div>
-              <label className="font-semibold block mb-1">Skills Wanted:</label>
-              {isEditing && (
-                <input
-                  value={newWantedSkill}
-                  onChange={(e) => setNewWantedSkill(e.target.value)}
-                  onKeyDown={handleAddWantedSkill}
-                  className="w-full p-2 mb-2 border rounded-md"
-                  placeholder="Enter skill and press Enter"
-                />
-              )}
-              <div className="flex flex-wrap gap-2">
-                {skillsWanted.map((skill) => (
-                  <span
-                    key={skill}
-                    className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
-                  >
-                    {skill}
-                    {isEditing && (
-                      <button
-                        onClick={() => handleRemoveSkill(skill, "wanted")}
-                        className="text-red-400 hover:text-red-600"
-                      >
-                        ×
-                      </button>
-                    )}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Buttons */}
       <div className="mt-8">
         {isEditing ? (
           <div className="flex gap-4">
@@ -262,7 +268,11 @@ const UserProfile = () => {
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="bg-gray-400 text-white px-6 py-2 rounded-md hover:bg-gray-500"
+              className={`px-6 py-2 rounded-md ${
+                darkMode
+                  ? "bg-gray-600 text-white hover:bg-gray-500"
+                  : "bg-gray-400 text-white hover:bg-gray-500"
+              }`}
             >
               Cancel
             </button>

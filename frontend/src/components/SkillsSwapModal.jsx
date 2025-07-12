@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { useTheme } from "../context/themecontext";
 
 const SkillSwapModal = ({ isOpen, onClose, user, mySkills = [] }) => {
+  const { darkMode } = useTheme();
   const [mySkill, setMySkill] = useState("");
   const [theirSkill, setTheirSkill] = useState("");
   const [message, setMessage] = useState("");
@@ -70,11 +72,19 @@ const SkillSwapModal = ({ isOpen, onClose, user, mySkills = [] }) => {
     <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50">
       <div
         ref={modalRef}
-        className="relative bg-white rounded-lg shadow-lg p-6 w-96 max-w-full border border-gray-300"
+        className={`relative rounded-lg shadow-lg p-6 w-96 max-w-full border ${
+          darkMode
+            ? "bg-gray-800 border-gray-600 text-white"
+            : "bg-white border-gray-300 text-gray-900"
+        }`}
       >
         {/* Close button */}
         <button
-          className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl font-bold"
+          className={`absolute top-2 right-2 text-xl font-bold ${
+            darkMode
+              ? "text-gray-300 hover:text-red-400"
+              : "text-gray-500 hover:text-red-500"
+          }`}
           onClick={onClose}
           aria-label="Close modal"
         >
@@ -89,7 +99,11 @@ const SkillSwapModal = ({ isOpen, onClose, user, mySkills = [] }) => {
           Choose one of your offered skills
         </label>
         <select
-          className="w-full mb-4 p-2 border border-gray-300 rounded"
+          className={`w-full mb-4 p-2 rounded ${
+            darkMode
+              ? "bg-gray-700 border border-gray-600 text-white"
+              : "border border-gray-300 bg-white"
+          }`}
           value={mySkill}
           onChange={(e) => setMySkill(e.target.value)}
         >
@@ -102,10 +116,14 @@ const SkillSwapModal = ({ isOpen, onClose, user, mySkills = [] }) => {
         </select>
 
         <label className="text-sm mb-1 block">
-          Choose one of their wanted skills
+          Choose one of their offered skills
         </label>
         <select
-          className="w-full mb-4 p-2 border border-gray-300 rounded"
+          className={`w-full mb-4 p-2 rounded ${
+            darkMode
+              ? "bg-gray-700 border border-gray-600 text-white"
+              : "border border-gray-300 bg-white"
+          }`}
           value={theirSkill}
           onChange={(e) => setTheirSkill(e.target.value)}
         >
@@ -120,7 +138,11 @@ const SkillSwapModal = ({ isOpen, onClose, user, mySkills = [] }) => {
         <label className="text-sm mb-1 block">Message</label>
         <textarea
           rows="3"
-          className="w-full mb-4 p-2 border border-gray-300 rounded"
+          className={`w-full mb-4 p-2 rounded ${
+            darkMode
+              ? "bg-gray-700 border border-gray-600 text-white"
+              : "border border-gray-300 bg-white"
+          }`}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
