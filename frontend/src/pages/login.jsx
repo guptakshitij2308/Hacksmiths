@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext"; // adjust path
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { setUserInfo } = useContext(AuthContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -30,6 +32,7 @@ const LoginPage = () => {
 
       // ✅ Optional: Set auth header globally (if needed)
       // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      setUserInfo(JSON.stringify(user));
 
       navigate("/");
     } catch (err) {
