@@ -1,21 +1,20 @@
 const User = require("../models/User.model");
 const AppError = require("../utils/appError");
 
-// ✅ Get My Profile
-exports.getProfile = async (req, res, next) => {
-  try {
-    const user = await User.findOne({ email: req.params.email }).select("-password");
+// // ✅ Get My Profile
+// exports.getProfile = async (req, res, next) => {
+//   try {
+//     const user = await User.findOne({ email: req.params.email }).select("-password");
 
-    if (!user) {
-      return next(new AppError("User not found", 404));
-    }
+//     if (!user) {
+//       return next(new AppError("User not found", 404));
+//     }
 
-    res.status(200).json(user);
-  } catch (err) {
-    next(err);
-  }
-};
-
+//     res.status(200).json(user);
+//   } catch (err) {
+//     next(err);
+//   }
+// };
 
 // ✅ Update My Profile
 exports.updateProfile = async (req, res, next) => {
@@ -48,7 +47,9 @@ exports.updateProfile = async (req, res, next) => {
 // ✅ Get Another User by ID
 exports.getUserByEmail = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.params.email }).select("-password");
+    const user = await User.findOne({ email: req.params.email }).select(
+      "-password"
+    );
 
     if (!user) return next(new AppError("User not found", 404));
 
@@ -62,32 +63,37 @@ exports.getUserByEmail = async (req, res, next) => {
   }
 };
 
-
 // ✅ Search Users by Skill
-exports.searchUsersBySkill = async (req, res, next) => {
+exports.searchUsers = async (req, res, next) => {
   try {
-    let { skills } = req.query;
+    let { skills, availability } = req.query;
 
     if (!skills) {
       return next(new AppError("Skills query is required", 400));
     }
 
-    // Convert skills to array (in case it's a comma-separated string)
+    // Convert skills and availability to arrays
     if (typeof skills === "string") {
-      skills = skills.split(",").map(s => s.trim());
+      skills = skills.split(",").map((s) => s.trim());
     }
 
-    const users = await User.find({
+    if (availability && typeof availability === "string") {
+      availability = availability.split(",").map((a) => a.trim());
+    }
+
+    const query = {
       isPublic: true,
-      $and: [
-        {
-          $or: [
-            { skillsOffered: { $all: skills } },
-            { skillsWanted: { $all: skills } }
-          ]
-        }
-      ]
-    }).select("-password");
+      $or: [
+        { skillsOffered: { $in: skills } },
+        { skillsWanted: { $in: skills } },
+      ],
+    };
+
+    if (availability) {
+      query.availability = { $in: availability };
+    }
+
+    const users = await User.find(query).select("-password");
 
     res.status(200).json(users);
   } catch (err) {
