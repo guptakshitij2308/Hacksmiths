@@ -85,7 +85,7 @@ const UserProfile = () => {
         skillsWanted,
       };
 
-      await axios.put("/api/user/update", updates, {
+      await axios.patch("/api/user/update", updates, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -101,14 +101,14 @@ const UserProfile = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return (
-    <div className="bg-gradient-to-b from-blue-50 to-purple-50 min-h-screen flex flex-col items-center justify-center px-4 py-12 text-gray-900">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl p-8 relative grid grid-cols-1 md:grid-cols-2 gap-8 border">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center px-4 py-12 text-gray-900">
+      <div className="bg-white rounded-2xl shadow-xl h-full w-full max-w-5xl p-8 relative grid grid-cols-1 md:grid-cols-2 gap-8 ">
         {/* Profile Image top-right */}
         <div className="absolute top-6 right-6 flex flex-col items-center">
           <img
             src={user?.profilePhoto || "/user.jpg"}
             alt="Profile"
-            className="w-28 h-28 rounded-full object-cover border-4 border-indigo-200 shadow-md"
+            className="w-24 h-24 rounded-full object-cover border-2 border-indigo-200 shadow-md"
           />
         </div>
 
@@ -171,69 +171,69 @@ const UserProfile = () => {
               <option value="private">Private</option>
             </select>
           </div>
-        </div>
-
-        {/* Right Column */}
-        <div className="space-y-6">
-          <div>
-            <label className="font-semibold block mb-1">Skills Offered:</label>
-            {isEditing && (
-              <input
-                value={newSkill}
-                onChange={(e) => setNewSkill(e.target.value)}
-                onKeyDown={handleAddSkill}
-                className="w-full p-2 mb-2 border rounded-md"
-                placeholder="Enter skill and press Enter"
-              />
-            )}
-            <div className="flex flex-wrap gap-2">
-              {skillsOffered.map((skill) => (
-                <span
-                  key={skill}
-                  className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
-                >
-                  {skill}
-                  {isEditing && (
-                    <button
-                      onClick={() => handleRemoveSkill(skill, "offered")}
-                      className="text-red-400 hover:text-red-600"
-                    >
-                      ×
-                    </button>
-                  )}
-                </span>
-              ))}
+          <div className="space-y-6 flex justify-between">
+            <div>
+              <label className="font-semibold block mb-1">
+                Skills Offered:
+              </label>
+              {isEditing && (
+                <input
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  onKeyDown={handleAddSkill}
+                  className="w-full p-2 mb-2 border rounded-md"
+                  placeholder="Enter skill and press Enter"
+                />
+              )}
+              <div className="flex flex-wrap gap-2">
+                {skillsOffered.map((skill) => (
+                  <span
+                    key={skill}
+                    className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                  >
+                    {skill}
+                    {isEditing && (
+                      <button
+                        onClick={() => handleRemoveSkill(skill, "offered")}
+                        className="text-red-400 hover:text-red-600"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label className="font-semibold block mb-1">Skills Wanted:</label>
-            {isEditing && (
-              <input
-                value={newWantedSkill}
-                onChange={(e) => setNewWantedSkill(e.target.value)}
-                onKeyDown={handleAddWantedSkill}
-                className="w-full p-2 mb-2 border rounded-md"
-                placeholder="Enter skill and press Enter"
-              />
-            )}
-            <div className="flex flex-wrap gap-2">
-              {skillsWanted.map((skill) => (
-                <span
-                  key={skill}
-                  className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
-                >
-                  {skill}
-                  {isEditing && (
-                    <button
-                      onClick={() => handleRemoveSkill(skill, "wanted")}
-                      className="text-red-400 hover:text-red-600"
-                    >
-                      ×
-                    </button>
-                  )}
-                </span>
-              ))}
+            <div>
+              <label className="font-semibold block mb-1">Skills Wanted:</label>
+              {isEditing && (
+                <input
+                  value={newWantedSkill}
+                  onChange={(e) => setNewWantedSkill(e.target.value)}
+                  onKeyDown={handleAddWantedSkill}
+                  className="w-full p-2 mb-2 border rounded-md"
+                  placeholder="Enter skill and press Enter"
+                />
+              )}
+              <div className="flex flex-wrap gap-2">
+                {skillsWanted.map((skill) => (
+                  <span
+                    key={skill}
+                    className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                  >
+                    {skill}
+                    {isEditing && (
+                      <button
+                        onClick={() => handleRemoveSkill(skill, "wanted")}
+                        className="text-red-400 hover:text-red-600"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -270,3 +270,188 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
+
+// import { useState } from "react";
+
+// const UserProfileEdit = () => {
+//   const [skillsOffered, setSkillsOffered] = useState([
+//     "Graphic Design",
+//     "Video Editing",
+//     "Photoshop",
+//   ]);
+//   const [skillsWanted, setSkillsWanted] = useState([
+//     "Python",
+//     "JavaScript",
+//     "Manager",
+//   ]);
+//   const [availability, setAvailability] = useState("weekends");
+//   const [profileType, setProfileType] = useState("Public");
+//   const [name, setName] = useState("");
+//   const [location, setLocation] = useState("");
+
+//   const [newOfferedSkill, setNewOfferedSkill] = useState("");
+//   const [newWantedSkill, setNewWantedSkill] = useState("");
+
+//   const handleSkillAdd = (type) => {
+//     if (
+//       type === "offered" &&
+//       newOfferedSkill &&
+//       !skillsOffered.includes(newOfferedSkill)
+//     ) {
+//       setSkillsOffered([...skillsOffered, newOfferedSkill]);
+//       setNewOfferedSkill("");
+//     }
+//     if (
+//       type === "wanted" &&
+//       newWantedSkill &&
+//       !skillsWanted.includes(newWantedSkill)
+//     ) {
+//       setSkillsWanted([...skillsWanted, newWantedSkill]);
+//       setNewWantedSkill("");
+//     }
+//   };
+
+//   const handleSkillRemove = (type, skill) => {
+//     if (type === "offered")
+//       setSkillsOffered(skillsOffered.filter((s) => s !== skill));
+//     if (type === "wanted")
+//       setSkillsWanted(skillsWanted.filter((s) => s !== skill));
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-black text-white flex items-center justify-center py-10 px-4">
+//       <div className="border border-white rounded-2xl p-10 w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-10">
+//         {/* Left side */}
+//         <div>
+//           {/* Name */}
+//           <div className="mb-6">
+//             <label className="block font-handwritten text-lg mb-1">Name</label>
+//             <input
+//               className="w-full bg-black border-b border-white outline-none"
+//               value={name}
+//               onChange={(e) => setName(e.target.value)}
+//               placeholder="__________"
+//             />
+//           </div>
+
+//           {/* Location */}
+//           <div className="mb-6">
+//             <label className="block font-handwritten text-lg mb-1">
+//               Location
+//             </label>
+//             <input
+//               className="w-full bg-black border-b border-white outline-none"
+//               value={location}
+//               onChange={(e) => setLocation(e.target.value)}
+//               placeholder="__________"
+//             />
+//           </div>
+
+//           {/* Skills Offered */}
+//           <div className="mb-6">
+//             <label className="block font-handwritten text-lg mb-1">
+//               Skills Offered
+//             </label>
+//             <div className="flex flex-wrap gap-2 mt-2">
+//               {skillsOffered.map((skill, i) => (
+//                 <span
+//                   key={i}
+//                   className="bg-black border border-white rounded-full px-3 py-1 flex items-center gap-2"
+//                 >
+//                   {skill}
+//                   <button
+//                     onClick={() => handleSkillRemove("offered", skill)}
+//                     className="text-white text-xs"
+//                   >
+//                     ❌
+//                   </button>
+//                 </span>
+//               ))}
+//             </div>
+//             <input
+//               value={newOfferedSkill}
+//               onChange={(e) => setNewOfferedSkill(e.target.value)}
+//               onKeyDown={(e) => e.key === "Enter" && handleSkillAdd("offered")}
+//               placeholder="Add Skill"
+//               className="mt-2 w-full bg-black border-b border-white outline-none"
+//             />
+//           </div>
+
+//           {/* Availability */}
+//           <div className="mb-6">
+//             <label className="block font-handwritten text-lg mb-1">
+//               Availability
+//             </label>
+//             <input
+//               className="w-full bg-black border-b border-white outline-none"
+//               value={availability}
+//               onChange={(e) => setAvailability(e.target.value)}
+//               placeholder="weekends"
+//             />
+//           </div>
+
+//           {/* Profile */}
+//           <div className="mb-6">
+//             <label className="block font-handwritten text-lg mb-1">
+//               Profile
+//             </label>
+//             <select
+//               className="w-full bg-black border-b border-white outline-none"
+//               value={profileType}
+//               onChange={(e) => setProfileType(e.target.value)}
+//             >
+//               <option>Public</option>
+//               <option>Private</option>
+//             </select>
+//           </div>
+//         </div>
+
+//         {/* Right side */}
+//         <div>
+//           {/* Profile Photo */}
+//           <div className="flex flex-col items-center mb-10">
+//             <div className="rounded-full border border-white w-40 h-40 flex items-center justify-center text-center text-sm">
+//               Profile Photo
+//             </div>
+//             <div className="mt-3 text-sm">
+//               <span className="text-white">Add/Edit</span>{" "}
+//               <button className="text-red-400 hover:underline">Remove</button>
+//             </div>
+//           </div>
+
+//           {/* Skills Wanted */}
+//           <div className="mb-6">
+//             <label className="block font-handwritten text-lg mb-1">
+//               Skills Wanted
+//             </label>
+//             <div className="flex flex-wrap gap-2 mt-2">
+//               {skillsWanted.map((skill, i) => (
+//                 <span
+//                   key={i}
+//                   className="bg-black border border-white rounded-full px-3 py-1 flex items-center gap-2"
+//                 >
+//                   {skill}
+//                   <button
+//                     onClick={() => handleSkillRemove("wanted", skill)}
+//                     className="text-white text-xs"
+//                   >
+//                     ❌
+//                   </button>
+//                 </span>
+//               ))}
+//             </div>
+//             <input
+//               value={newWantedSkill}
+//               onChange={(e) => setNewWantedSkill(e.target.value)}
+//               onKeyDown={(e) => e.key === "Enter" && handleSkillAdd("wanted")}
+//               placeholder="Add Skill"
+//               className="mt-2 w-full bg-black border-b border-white outline-none"
+//             />
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default UserProfileEdit;
